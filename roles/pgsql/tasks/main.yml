@@ -1,0 +1,45 @@
+- name: Install postgresql server - Ubuntu
+  block:
+    - name: Install System Packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ sys_packages }}"
+
+    - name: Aadd postgres repo key
+      apt_key:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+      
+    - name: Add postgres repo
+      apt_repository:
+        repo: deb https://apt.postgresql.org/pub/repos/apt jammy-pgdg main
+        state: present
+        filename: pg-repo
+
+    - name: Install postgresql-server package
+      apt:
+        name: "postgresql-{{ pg_version }}"
+        state: present
+        update_cache: yes
+    
+    - name: Drop default pg cluster
+      command: "/usr/bin/pg_dropcluster --stop {{ pg_version }} main"
+      register: drop_result
+      failed_when: drop_result.rc != 0
+      notify: postgresql restart
+    
+    - name: create directory for pg_datall
+      file:
+        path: "{{ pg_data }}"
+        state: directory
+        owner: postgres
+        group: postgres
+        mode: '0700'
+
+    - name: Start new pg cluster with the given pg_data dir
+      command: "/usr/bin/pg_createcluster -D /opt/pg_data/ --start {{ pg_version }} {{ pg_cluster_name }}"
+      register: cr_result
+      failed_when: cr_result.rc != 0
+      notify: postgresql restart
+
+  when: inventory_hostname in groups["os_ubuntu"] and inventory_hostname in groups ["database"]

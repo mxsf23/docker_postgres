@@ -1,0 +1,35 @@
+all:
+  children:
+    vms:
+      hosts:
+        %{ for content_key, content_value in app_content}
+        ${content_key}:
+          ansible_host: ${content_value}
+          ansible_port: 22
+        %{~ endfor ~}
+        %{ for content_key, content_value in pg_content}
+        ${content_key}:
+            ansible_host: ${content_value}
+            ansible_port: 22
+        %{~ endfor ~}
+      children:
+        app:
+          hosts:
+            %{ for content_key,content_value in app_content}
+            ${content_key}:
+            %{~ endfor ~}
+        database:
+          hosts:
+            %{ for content_key, content_value in pg_content}
+            ${content_key}:
+            %{~ endfor ~}
+          vars:
+            pg_version: 15
+            pg_data: /opt/pg_data
+        web:
+          hosts:
+            %{ for content_key, content_value in pg_content}
+            ${content_key}:
+            %{~ endfor ~}
+            
+

@@ -1,0 +1,44 @@
+- name: Install Docker - Ubuntu
+  block:
+    - name: Install System Packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ sys_packages }}"
+
+    - name: Aadd gpg key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+      
+    - name: Add docker repo
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu jammy stable
+        state: present
+        filename: docker-repo
+
+    - name: Install docker package
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ docker_packages  }}"
+      notify: docker start
+
+  when: inventory_hostname in groups["os_ubuntu"] and inventory_hostname in groups ["app"]
+
+- name: Install Docker - Centos
+  block:
+    - name: Add docker repo
+      yum_repository:
+        name: docker-repo
+        description: Docker CE Stable - $basearch
+        baseurl: https://download.docker.com/linux/centos/8/$basearch/stable
+        gpgkey: https://download.docker.com/linux/centos/gpg
+        enabled: true
+
+    - name: Install docker package
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ docker_packages  }}"
+      notify: docker start
+  when: inventory_hostname in groups["os_centos"] and inventory_hostname in groups ["app"]

@@ -1,0 +1,16 @@
+sys_packages:
+  - ca-certificates 
+  - curl 
+  - gnupg
+  - mc
+  - wget
+  - apt-file
+  - bash-completion
+  - apt-transport-https
+  - software-properties-common
+
+docker_packages:
+  - docker-ce 
+  - docker-ce-cli 
+  - containerd.io 
+  - docker-compose-plugin

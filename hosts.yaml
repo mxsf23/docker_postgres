@@ -1,0 +1,36 @@
+all:
+  children:
+    vms:
+      hosts:
+        
+        vm-02:
+          ansible_host: 192.168.20.35
+          ansible_port: 22
+
+        vm-03:
+          ansible_host: 192.168.20.11
+          ansible_port: 22
+        
+        vm-01:
+            ansible_host: 192.168.20.22
+            ansible_port: 22
+      children:
+        app:
+          hosts:
+            
+            vm-02:
+
+            vm-03:
+        database:
+          hosts:
+            
+            vm-01:
+          vars:
+            pg_version: 15
+            pg_data: /opt/pg_data
+        web:
+          hosts:
+            
+            vm-01:
+            
+

@@ -1,0 +1,9 @@
+sys_packages:
+  - vim
+  - mc
+
+docker_packages:
+  - docker-ce 
+  - docker-ce-cli 
+  - containerd.io 
+  - docker-compose-plugin

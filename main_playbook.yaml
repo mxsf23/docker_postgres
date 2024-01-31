@@ -1,0 +1,24 @@
+- name: Docker and Postgres Deploy
+  gather_facts: yes
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Group hosts by OS distribution
+      group_by:
+        key: os_{{ ansible_facts['distribution'] | lower }}
+
+    - name: test debug
+      debug:
+        msg: "{{ groups  }}"
+
+    - name: Install docker on app hosts
+      include_role:
+        name: docker
+
+    - name: Install database on database hosts
+      include_role:
+        name: pgsql
+      vars:
+        pg_cluster_name: cluster01
